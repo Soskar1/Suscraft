@@ -13,7 +13,7 @@ namespace Suscraft.Core.VoxelTerrainEngine
     }
 
     [Serializable]
-    public class TextureData
+    public struct TextureData
     {
         public VoxelType voxelType;
 
@@ -21,7 +21,7 @@ namespace Suscraft.Core.VoxelTerrainEngine
         public Vector2Int down;
         public Vector2Int side;
 
-        public bool isSolid = true;
-        public bool generatesCollider = true;
+        public bool isSolid;
+        public bool generatesCollider;
     }
 }
