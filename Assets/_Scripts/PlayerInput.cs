@@ -12,5 +12,6 @@ namespace Suscraft.Core
         public void Disable() => _controls.Disable();
 
         public Vector2 GetMovementDirection() => _controls.Player.Movement.ReadValue<Vector2>();
+        public Vector2 GetDeltaMouse() => _controls.Player.Rotation.ReadValue<Vector2>();
     }
 }

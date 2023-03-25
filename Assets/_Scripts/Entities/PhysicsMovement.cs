@@ -5,6 +5,7 @@ namespace Suscraft.Core.Entities
     [RequireComponent(typeof(Rigidbody))]
     public class PhysicsMovement : MonoBehaviour, IMovement
     {
+        [SerializeField] private Transform _body;
         [SerializeField] private Rigidbody _rigidbody;
         [SerializeField] private float _speed;
         [SerializeField] private float _acceleration;
@@ -15,7 +16,7 @@ namespace Suscraft.Core.Entities
 
         public void Move(Vector2 direction)
         {
-            Vector3 transformedDirection = transform.TransformDirection(new Vector3(direction.x, 0f, direction.y));
+            Vector3 transformedDirection = _body.TransformDirection(new Vector3(direction.x, 0f, direction.y));
             Vector3 targetVelocity = new Vector3(transformedDirection.x * _speed, 0f, transformedDirection.z * _speed);
             Vector3 velocityDifference = targetVelocity - _rigidbody.velocity;
             float accelerationRate = (Mathf.Abs(targetVelocity.magnitude) > EPSILON) ? _acceleration : _decceleration;
