@@ -12,7 +12,7 @@ namespace Suscraft.Core.VoxelTerrainEngine
         private List<Vector3> _colliderVertices = new List<Vector3>();
         private List<int> _colliderTriangles = new List<int>();
 
-        private MeshData _waterMesh;
+        public MeshData waterMesh;
 
         private bool _isMainMesh = true;
 
@@ -21,12 +21,11 @@ namespace Suscraft.Core.VoxelTerrainEngine
         public List<Vector2> UV => _uv;
         public List<Vector3> ColliderVertices => _colliderVertices;
         public List<int> ColliderTriangles => _colliderTriangles;
-        public MeshData WaterMesh => _waterMesh;
 
         public MeshData(bool isMainMesh)
         {
             if (isMainMesh)
-                _waterMesh = new MeshData(false);
+                waterMesh = new MeshData(false);
         }
 
         public void AddVertex(Vector3 vertex, bool vertexGeneratesCollider)

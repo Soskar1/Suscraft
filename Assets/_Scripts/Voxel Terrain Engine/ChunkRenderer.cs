@@ -30,12 +30,12 @@ namespace Suscraft.Core.VoxelTerrainEngine
             _mesh.Clear();
 
             _mesh.subMeshCount = 2;
-            _mesh.vertices = meshData.Vertices.Concat(meshData.WaterMesh.Vertices).ToArray();
+            _mesh.vertices = meshData.Vertices.Concat(meshData.waterMesh.Vertices).ToArray();
 
             _mesh.SetTriangles(meshData.Triangles.ToArray(), 0);
-            _mesh.SetTriangles(meshData.WaterMesh.Triangles.Select(val => val + meshData.Vertices.Count).ToArray(), 1);
+            _mesh.SetTriangles(meshData.waterMesh.Triangles.Select(val => val + meshData.Vertices.Count).ToArray(), 1);
 
-            _mesh.uv = meshData.UV.Concat(meshData.WaterMesh.UV).ToArray();
+            _mesh.uv = meshData.UV.Concat(meshData.waterMesh.UV).ToArray();
             _mesh.RecalculateNormals();
 
             _meshCollider.sharedMesh = null;

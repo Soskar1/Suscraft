@@ -11,6 +11,11 @@ namespace Suscraft.Core.VoxelTerrainEngine
         private static Dictionary<VoxelType, TextureData> _voxelTextureData = new Dictionary<VoxelType, TextureData>();
         private VoxelDataSO _textureData;
 
+        public static float TileSizeX => _tileSizeX;
+        public static float TileSizeY => _tileSizeY;
+        public static float TextureOffset => _textureOffset;
+        public static Dictionary<VoxelType, TextureData> VoxelTextureData  => _voxelTextureData;
+
         private void Awake()
         {
             foreach (var item in _textureData.textureDataList)
