@@ -12,8 +12,10 @@ namespace Suscraft.Core.VoxelTerrainEngine
 
         public bool modifiedByPlayer = false;
 
+        public VoxelType[] Voxels => _voxels;
         public int ChunkSize => _chunkSize;
         public int ChunkHeight => _chunkHeight;
+        public Vector3Int WorldPosition => _worldPosition;
 
         public ChunkData(int chunkSize, int chunkHeight, World world, Vector3Int worldPosition)
         {
