@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,9 +8,11 @@ namespace Suscraft.Core.VoxelTerrainEngine
         [SerializeField] private int _mapSizeInChunks = 6;
         [SerializeField] private int _chunkSize = 16;
         [SerializeField] private int _chunkHeight = 100;
-        [SerializeField] private int _waterThreshold = 50;
-        [SerializeField] private float _noiseScale = 0.03f;
+
         [SerializeField] private GameObject _chunkPrefab;
+
+        [SerializeField] private TerrainGenerator _terrainGenerator;
+        [SerializeField] private Vector2Int _mapSeedOffset;
 
         private Dictionary<Vector3Int, ChunkData> _chunkDatas = new Dictionary<Vector3Int, ChunkData>();
         private Dictionary<Vector3Int, ChunkRenderer> _chunks = new Dictionary<Vector3Int, ChunkRenderer>();
@@ -31,8 +32,9 @@ namespace Suscraft.Core.VoxelTerrainEngine
                 for (int z = 0; z < _mapSizeInChunks; ++z)
                 {
                     ChunkData data = new ChunkData(_chunkSize, _chunkHeight, this, new Vector3Int(x * _chunkSize, 0, z * _chunkSize));
-                    GenerateVoxels(data);
-                    _chunkDatas.Add(data.WorldPosition, data);
+                    //GenerateVoxels(data);
+                    ChunkData newData = _terrainGenerator.GenerateChunkData(data, _mapSeedOffset);
+                    _chunkDatas.Add(newData.WorldPosition, newData);
                 }
             }
 
@@ -49,32 +51,7 @@ namespace Suscraft.Core.VoxelTerrainEngine
 
         private void GenerateVoxels(ChunkData data)
         {
-            for (int x = 0; x < data.ChunkSize; ++x)
-            {
-                for (int z = 0; z < data.ChunkSize; ++z)
-                {
-                    float noiseValue = Mathf.PerlinNoise((data.WorldPosition.x + x) * _noiseScale, (data.WorldPosition.z + z) * _noiseScale);
-                    int groundPosition = Mathf.RoundToInt(noiseValue * _chunkHeight);
-
-                    for (int y = 0; y < _chunkHeight; ++y)
-                    {
-                        VoxelType voxelType = VoxelType.Dirt;
-                        if (y > groundPosition)
-                        {
-                            if (y < _waterThreshold)
-                                voxelType = VoxelType.Water;
-                            else
-                                voxelType = VoxelType.Air;
-                        }
-                        else if (y == groundPosition)
-                        {
-                            voxelType = VoxelType.Grass_Dirt;
-                        }
-
-                        Chunk.SetVoxel(data, new Vector3Int(x, y, z), voxelType);
-                    }
-                }
-            }
+            
         }
 
         public VoxelType GetVoxelFromChunkCoordinates(ChunkData chunkData, int x, int y, int z)
