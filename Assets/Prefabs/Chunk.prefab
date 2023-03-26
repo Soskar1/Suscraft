@@ -112,6 +112,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3e54470215e2c94fbbb80697b3543cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _meshFilter: {fileID: 0}
-  _meshCollider: {fileID: 0}
+  _meshFilter: {fileID: 7753437071599633960}
+  _meshCollider: {fileID: 7753437071599633942}
   _showGizmo: 0

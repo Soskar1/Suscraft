@@ -9,7 +9,7 @@ namespace Suscraft.Core.VoxelTerrainEngine
         private static float _tileSizeX;
         private static float _tileSizeY;
         private static Dictionary<VoxelType, TextureData> _voxelTextureData = new Dictionary<VoxelType, TextureData>();
-        private VoxelDataSO _textureData;
+        [SerializeField] private VoxelDataSO _textureData;
 
         public static float TileSizeX => _tileSizeX;
         public static float TileSizeY => _tileSizeY;

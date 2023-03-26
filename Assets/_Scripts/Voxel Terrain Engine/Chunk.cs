@@ -76,7 +76,7 @@ namespace Suscraft.Core.VoxelTerrainEngine
                 return chunkData.Voxels[index];
             }
 
-            throw new Exception("Need to ask World for appropriate chunk");
+            return chunkData.World.GetVoxelFromChunkCoordinates(chunkData, chunkData.WorldPosition.x + x, chunkData.WorldPosition.y + y, chunkData.WorldPosition.z + z);
         }
 
         public static VoxelType GetVoxelFromChunkCoordinates(ChunkData chunkData, Vector3Int chunkCoordinates)
@@ -88,7 +88,19 @@ namespace Suscraft.Core.VoxelTerrainEngine
         {
             MeshData meshData = new MeshData(true);
 
+            LoopThroughTheVoxels(chunkData, (x, y, z) => meshData = VoxelHelper.GetMeshData(chunkData, x, y, z, meshData, chunkData.Voxels[GetIndexFromPosition(chunkData, x, y, z)]));
+
             return meshData;
+        }
+
+        public static Vector3Int ChunkPositionFromVoxelCoordinates(World world, int x, int y, int z)
+        {
+            return new Vector3Int
+            {
+                x = Mathf.FloorToInt(x / (float)world.ChunkSize) * world.ChunkSize,
+                y = Mathf.FloorToInt(y / (float)world.ChunkHeight) * world.ChunkHeight,
+                z = Mathf.FloorToInt(z / (float)world.ChunkSize) * world.ChunkSize
+            };
         }
     }
 }
