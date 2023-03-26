@@ -499,12 +499,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf17b6f934c14d347a232a68ae5c8d2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _mapSizeInChunks: 6
+  _mapSizeInChunks: 30
   _chunkSize: 16
   _chunkHeight: 100
   _chunkPrefab: {fileID: 7753437071599633941, guid: 28f7d483e80d56e49a461e7f67f929e3, type: 3}
   _terrainGenerator: {fileID: 1160175835}
-  _mapSeedOffset: {x: 0, y: 0}
+  _mapSeedOffset: {x: 125, y: 25}
 --- !u!1 &560514634
 GameObject:
   m_ObjectHideFlags: 0
@@ -1099,8 +1099,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8750d63377415a141aa13fa270263f05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _waterThreshold: 38
-  _noiseScale: 0.01
+  _biomeNoiseSettings: {fileID: 11400000, guid: 5207ad1e5dd9ef844be9c094f675f136, type: 2}
+  _waterThreshold: 10
 --- !u!1 &1204975374
 GameObject:
   m_ObjectHideFlags: 0

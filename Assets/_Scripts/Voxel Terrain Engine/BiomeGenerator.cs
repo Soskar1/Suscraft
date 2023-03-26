@@ -4,14 +4,13 @@ namespace Suscraft.Core.VoxelTerrainEngine
 {
     public class BiomeGenerator : MonoBehaviour
     {
+        [SerializeField] private NoiseSettings _biomeNoiseSettings;
         [SerializeField] private int _waterThreshold = 50;
-        [SerializeField] private float _noiseScale = 0.03f;
 
         public ChunkData ProcessChunkColumn(ChunkData data, int x, int z, Vector2Int mapSeedOffset)
         {
-            float noiseValue = Mathf.PerlinNoise((data.WorldPosition.x + x + mapSeedOffset.x) * _noiseScale, 
-                (data.WorldPosition.z + z + mapSeedOffset.y) * _noiseScale);
-            int groundPosition = Mathf.RoundToInt(noiseValue * data.ChunkHeight);
+            _biomeNoiseSettings.worldOffset = mapSeedOffset;
+            int groundPosition = GetSurfaceHeightNoise(data.ChunkHeight, data.WorldPosition.x + x, data.WorldPosition.z + z);
 
             for (int y = 0; y < data.ChunkHeight; ++y)
             {
@@ -36,6 +35,15 @@ namespace Suscraft.Core.VoxelTerrainEngine
             }
 
             return data;
+        }
+
+        private int GetSurfaceHeightNoise(int chunkHeight, int x, int z)
+        {
+            float terrainHeight = Noise.OctavePerlin(x, z, _biomeNoiseSettings);
+            terrainHeight = Noise.Redistribution(terrainHeight, _biomeNoiseSettings);
+
+            int surfaceHeight = Noise.RemapValue01ToInt(terrainHeight, 0, chunkHeight);
+            return surfaceHeight;
         }
     }
 }
