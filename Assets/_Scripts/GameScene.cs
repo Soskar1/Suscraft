@@ -11,8 +11,8 @@ namespace Suscraft.Core
         {
             _player.Initialize();
 
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+            //Cursor.lockState = CursorLockMode.Locked;
+            //Cursor.visible = false;
         }
     }
 }
