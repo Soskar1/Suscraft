@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Suscraft.Core.VoxelTerrainEngine
+namespace Suscraft.Core.VoxelTerrainEngine.PerlinNoise
 {
     public static class Noise
     {

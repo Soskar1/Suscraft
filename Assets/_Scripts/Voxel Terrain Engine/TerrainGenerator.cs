@@ -1,4 +1,5 @@
 using UnityEngine;
+using Suscraft.Core.VoxelTerrainEngine.Chunks;
 
 namespace Suscraft.Core.VoxelTerrainEngine
 {

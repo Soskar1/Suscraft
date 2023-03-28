@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Suscraft.Core.VoxelTerrainEngine.Chunks;
+using Suscraft.Core.VoxelTerrainEngine.Voxels;
 
 namespace Suscraft.Core.VoxelTerrainEngine
 {

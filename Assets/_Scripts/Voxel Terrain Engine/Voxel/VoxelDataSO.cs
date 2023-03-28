@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Suscraft.Core.VoxelTerrainEngine
+namespace Suscraft.Core.VoxelTerrainEngine.Voxels
 {
-    [CreateAssetMenu(fileName = "Voxel Data", menuName = "Data/Voxel Data")]
+    [CreateAssetMenu(fileName = "Voxels Data", menuName = "Data/Voxels Data")]
     public class VoxelDataSO : ScriptableObject
     {
         public float textureSizeX;

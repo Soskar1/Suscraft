@@ -1,9 +1,13 @@
 using UnityEngine;
+using Suscraft.Core.VoxelTerrainEngine.Chunks;
+using Suscraft.Core.VoxelTerrainEngine.PerlinNoise;
+using Suscraft.Core.VoxelTerrainEngine.Layers;
 
 namespace Suscraft.Core.VoxelTerrainEngine
 {
     public class BiomeGenerator : MonoBehaviour
     {
+        [SerializeField] private VoxelLayerHandler _startLayerHandler;
         [SerializeField] private NoiseSettings _biomeNoiseSettings;
         [SerializeField] private int _waterThreshold = 50;
 
@@ -14,24 +18,26 @@ namespace Suscraft.Core.VoxelTerrainEngine
 
             for (int y = 0; y < data.ChunkHeight; ++y)
             {
-                VoxelType voxelType = VoxelType.Dirt;
-                if (y > groundPosition)
-                {
-                    if (y < _waterThreshold)
-                        voxelType = VoxelType.Water;
-                    else
-                        voxelType = VoxelType.Air;
-                }
-                else if (y == groundPosition && y < _waterThreshold)
-                {
-                    voxelType = VoxelType.Sand;
-                }
-                else if (y == groundPosition)
-                {
-                    voxelType = VoxelType.Grass_Dirt;
-                }
+                _startLayerHandler.Handle(data, new Vector3Int(x, y, z), groundPosition, mapSeedOffset);
 
-                Chunk.SetVoxel(data, new Vector3Int(x, y, z), voxelType);
+                //VoxelType voxelType = VoxelType.Dirt;
+                //if (y > groundPosition)
+                //{
+                //    if (y < _waterThreshold)
+                //        voxelType = VoxelType.Water;
+                //    else
+                //        voxelType = VoxelType.Air;
+                //}
+                //else if (y == groundPosition && y < _waterThreshold)
+                //{
+                //    voxelType = VoxelType.Sand;
+                //}
+                //else if (y == groundPosition)
+                //{
+                //    voxelType = VoxelType.Grass_Dirt;
+                //}
+
+                //Chunk.SetVoxel(data, new Vector3Int(x, y, z), voxelType);
             }
 
             return data;
