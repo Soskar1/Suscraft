@@ -34,7 +34,6 @@ namespace Suscraft.Core.VoxelTerrainEngine
                 for (int z = 0; z < _mapSizeInChunks; ++z)
                 {
                     ChunkData data = new ChunkData(_chunkSize, _chunkHeight, this, new Vector3Int(x * _chunkSize, 0, z * _chunkSize));
-                    //GenerateVoxels(data);
                     ChunkData newData = _terrainGenerator.GenerateChunkData(data, _mapSeedOffset);
                     _chunkDatas.Add(newData.WorldPosition, newData);
                 }

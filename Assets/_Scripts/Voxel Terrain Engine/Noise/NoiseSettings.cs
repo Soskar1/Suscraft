@@ -1,8 +1,8 @@
 using UnityEngine;
 
-namespace Suscraft.Core.VoxelTerrainEngine.PerlinNoise
+namespace Suscraft.Core.VoxelTerrainEngine.Noises
 {
-    [CreateAssetMenu(fileName = "PerlinNoise Settings", menuName = "Data/PerlinNoise Settings")]
+    [CreateAssetMenu(fileName = "Noises Settings", menuName = "Data/Noises Settings")]
     public class NoiseSettings : ScriptableObject
     {
         public float noiseZoom;
