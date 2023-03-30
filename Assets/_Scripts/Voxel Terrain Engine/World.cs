@@ -29,12 +29,13 @@ namespace Suscraft.Core.VoxelTerrainEngine
 
         public void GenerateWorld()
         {
-            _chunkDatas.Clear();
-            foreach(ChunkRenderer chunk in  _chunks.Values)
-                Destroy(chunk.gameObject);
+            //_chunkDatas.Clear();
+            //foreach (ChunkRenderer chunk in _chunks.Values)
+            //    Destroy(chunk.gameObject);
 
-            _chunks.Clear();
-            for (int x  = 0; x < _mapSizeInChunks; ++x)
+            //_chunks.Clear();
+            WorldGenerationData worldGenerationData = GetPositionsThatPlayerSees(Vector3Int.zero);
+            for (int x = 0; x < _mapSizeInChunks; ++x)
             {
                 for (int z = 0; z < _mapSizeInChunks; ++z)
                 {
@@ -59,7 +60,7 @@ namespace Suscraft.Core.VoxelTerrainEngine
 
         private void GenerateVoxels(ChunkData data)
         {
-            
+
         }
 
         public VoxelType GetVoxelFromChunkCoordinates(ChunkData chunkData, int x, int y, int z)
@@ -81,5 +82,13 @@ namespace Suscraft.Core.VoxelTerrainEngine
             Debug.Log("Load more chunks");
             OnNewChunksGenerated?.Invoke();
         }
+    }
+
+    public struct WorldGenerationData
+    {
+        public List<Vector3Int> chunkPositionsToCreate;
+        public List<Vector3Int> chunkDataPositionsToCreate;
+        public List<Vector3Int> chunkPositionsToRemove;
+        public List<Vector3Int> chunkDataToRemove;
     }
 }
