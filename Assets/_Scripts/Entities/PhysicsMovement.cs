@@ -2,7 +2,6 @@ using UnityEngine;
 
 namespace Suscraft.Core.Entities
 {
-    [RequireComponent(typeof(Rigidbody))]
     public class PhysicsMovement : MonoBehaviour, IMovement
     {
         [SerializeField] private Transform _body;

@@ -12,6 +12,12 @@ namespace Suscraft.Core.Entities
         [SerializeField] private GroundCheck _groundCheck;
         private IMovement _movement;
 
+        private void Start()
+        {
+            Initialize();
+        }
+
+        [ContextMenu("Initialize")]
         public void Initialize() {
             _input.Initialize();
             _input.Enable();
