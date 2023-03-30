@@ -12,10 +12,8 @@ namespace Suscraft.Core.Entities
         [SerializeField] private GroundCheck _groundCheck;
         private IMovement _movement;
 
-        private void Start()
-        {
-            Initialize();
-        }
+        [SerializeField] private Transform _eyes;
+        public Transform Eyes => _eyes;
 
         [ContextMenu("Initialize")]
         public void Initialize() {

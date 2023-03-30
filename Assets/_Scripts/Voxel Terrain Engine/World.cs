@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Suscraft.Core.VoxelTerrainEngine.Chunks;
 using Suscraft.Core.VoxelTerrainEngine.Voxels;
+using Suscraft.Core.Entities;
+using System;
 
 namespace Suscraft.Core.VoxelTerrainEngine
 {
@@ -18,6 +20,9 @@ namespace Suscraft.Core.VoxelTerrainEngine
 
         private Dictionary<Vector3Int, ChunkData> _chunkDatas = new Dictionary<Vector3Int, ChunkData>();
         private Dictionary<Vector3Int, ChunkRenderer> _chunks = new Dictionary<Vector3Int, ChunkRenderer>();
+
+        public Action OnWorldGenerated;
+        public Action OnNewChunksGenerated;
 
         public int ChunkSize => _chunkSize;
         public int ChunkHeight => _chunkHeight;
@@ -48,6 +53,8 @@ namespace Suscraft.Core.VoxelTerrainEngine
                 chunkRenderer.InitializeChunk(data);
                 chunkRenderer.UpdateChunk(meshData);
             }
+
+            OnWorldGenerated?.Invoke();
         }
 
         private void GenerateVoxels(ChunkData data)
@@ -67,6 +74,12 @@ namespace Suscraft.Core.VoxelTerrainEngine
 
             Vector3Int voxelInChunkCoordinates = Chunk.GetVoxelInChunkCoordinates(containerChunk, new Vector3Int(x, y, z));
             return Chunk.GetVoxelFromChunkCoordinates(containerChunk, voxelInChunkCoordinates);
+        }
+
+        public void LoadAdditionalChunksRequest(Player player)
+        {
+            Debug.Log("Load more chunks");
+            OnNewChunksGenerated?.Invoke();
         }
     }
 }
