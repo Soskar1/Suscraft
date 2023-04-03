@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Suscraft.Core.VoxelTerrainEngine.Chunks;
 using Suscraft.Core.VoxelTerrainEngine.Voxels;
-using Suscraft.Core.Entities;
 using System;
 
 namespace Suscraft.Core.VoxelTerrainEngine
@@ -39,9 +38,17 @@ namespace Suscraft.Core.VoxelTerrainEngine
             };
         }
 
-        public void GenerateWorld()
+        public void GenerateWorld() => GenerateWorld(Vector3Int.zero);
+
+        private void GenerateWorld(Vector3Int position)
         {
-            WorldGenerationData worldGenerationData = GetVisiblePositions(Vector3Int.zero);
+            WorldGenerationData worldGenerationData = GetVisiblePositions(position);
+
+            foreach (var pos in worldGenerationData.chunkPositionsToRemove)
+                WorldDataHelper.RemoveChunk(this, pos);
+
+            foreach (var pos in worldGenerationData.chunkDataToRemove)
+                WorldDataHelper.RemoveChunkData(this, pos);
 
             foreach (var pos in worldGenerationData.chunkDataPositionsToCreate)
             {
@@ -66,6 +73,8 @@ namespace Suscraft.Core.VoxelTerrainEngine
             OnWorldGenerated?.Invoke();
         }
 
+        public void RemoveChunk(ChunkRenderer chunk) => chunk.gameObject.SetActive(false);
+
         private WorldGenerationData GetVisiblePositions(Vector3Int playerPosition)
         {
             List<Vector3Int> allChunkPositionsNeeded = WorldDataHelper.GetChunkPositionsAroundPlayer(this, playerPosition);
@@ -74,20 +83,18 @@ namespace Suscraft.Core.VoxelTerrainEngine
             List<Vector3Int> chunkPositionsToCreate = WorldDataHelper.SelectPositionsToCreate(worldData, allChunkPositionsNeeded, playerPosition);
             List<Vector3Int> chunkDataPositionsToCreate = WorldDataHelper.SelectDataPositionsToCreate(worldData, allChunkDataPositionsNeeded, playerPosition);
 
+            List<Vector3Int> chunkPositionsToRemove = WorldDataHelper.GetUnneededChunks(worldData, allChunkPositionsNeeded);
+            List<Vector3Int> chunkDataToRemove = WorldDataHelper.GetUnneededData(worldData, allChunkDataPositionsNeeded);
+
             WorldGenerationData data = new WorldGenerationData
             {
                 chunkPositionsToCreate = chunkPositionsToCreate,
                 chunkDataPositionsToCreate = chunkDataPositionsToCreate,
-                chunkPositionsToRemove = new List<Vector3Int>(),
-                chunkDataToRemove = new List<Vector3Int>()
+                chunkPositionsToRemove = chunkPositionsToRemove,
+                chunkDataToRemove = chunkDataToRemove
             };
 
             return data;
-        }
-
-        private void GenerateVoxels(ChunkData data)
-        {
-
         }
 
         public VoxelType GetVoxelFromChunkCoordinates(ChunkData chunkData, int x, int y, int z)
@@ -104,9 +111,10 @@ namespace Suscraft.Core.VoxelTerrainEngine
             return Chunk.GetVoxelFromChunkCoordinates(containerChunk, voxelInChunkCoordinates);
         }
 
-        public void LoadAdditionalChunksRequest(Player player)
+        public void LoadAdditionalChunksRequest(Transform player)
         {
             Debug.Log("Load more chunks");
+            GenerateWorld(Vector3Int.RoundToInt(player.position));
             OnNewChunksGenerated?.Invoke();
         }
     }

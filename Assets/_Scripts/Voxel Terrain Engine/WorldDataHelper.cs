@@ -1,3 +1,4 @@
+using Suscraft.Core.VoxelTerrainEngine.Chunks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,6 +49,18 @@ namespace Suscraft.Core.VoxelTerrainEngine
             return chunkPositionsToCreate;
         }
 
+        public static void RemoveChunkData(World world, Vector3Int pos) => world.worldData.chunkDatas.Remove(pos);
+
+        public static void RemoveChunk(World world, Vector3Int pos)
+        {
+            ChunkRenderer chunk = null;
+            if (world.worldData.chunks.TryGetValue(pos, out chunk))
+            {
+                world.RemoveChunk(chunk);
+                world.worldData.chunks.Remove(pos);
+            }
+        }
+
         public static List<Vector3Int> GetDataPositionsAroundPlayer(World world, Vector3Int playerPosition)
         {
             int startX = playerPosition.x - (world.ChunkDrawingRange + 1) * world.ChunkSize;
@@ -77,6 +90,32 @@ namespace Suscraft.Core.VoxelTerrainEngine
             }
 
             return chunkDataPositionsToCreate;
+        }
+
+        public static List<Vector3Int> GetUnneededData(WorldData worldData, List<Vector3Int> allChunkDataPositionsNeeded)
+        {
+            return worldData.chunkDatas.Keys
+                .Where(pos => allChunkDataPositionsNeeded.Contains(pos) == false && worldData.chunkDatas[pos].modifiedByPlayer == false)
+                .ToList();
+        }
+
+        public static List<Vector3Int> GetUnneededChunks(WorldData worldData, List<Vector3Int> allChunkPositionsNeeded)
+        {
+            //List<Vector3Int> positionsToRemove = new List<Vector3Int>();
+            //foreach (var pos in worldData.chunks.Keys
+            //    .Where(pos => allChunkPositionsNeeded.Contains(pos) == false))
+            //{
+            //    if (worldData.chunks.ContainsKey(pos))
+            //    {
+            //        positionsToRemove.Add(pos);
+            //    }
+            //}
+            
+            return worldData.chunks.Keys
+                .Where(pos => allChunkPositionsNeeded.Contains(pos) == false && worldData.chunks.ContainsKey(pos))
+                .ToList();
+
+            //return positionsToRemove;
         }
 
         public static List<Vector3Int> SelectPositionsToCreate(WorldData worldData, List<Vector3Int> allChunkPositionsNeeded, Vector3Int playerPosition)

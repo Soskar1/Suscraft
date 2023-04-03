@@ -27,7 +27,9 @@ namespace Suscraft.Core
                 _virtualCamera.Follow = playerInstance.Eyes;
                 _chunkLoading.Initialize(playerInstance);
                 playerInstance.Initialize();
-            } 
+            }
+
+            _world.OnWorldGenerated -= SpawnPlayer;
         }
     }
 }

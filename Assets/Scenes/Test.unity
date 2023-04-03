@@ -265,6 +265,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 168933644}
+        m_TargetAssemblyTypeName: UnityEngine.UI.Selectable, UnityEngine.UI
+        m_MethodName: set_interactable
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &168933645
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -519,9 +531,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf17b6f934c14d347a232a68ae5c8d2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _mapSizeInChunks: 30
+  _mapSizeInChunks: 10
   _chunkSize: 16
   _chunkHeight: 100
+  _chunkDrawingRange: 5
   _chunkPrefab: {fileID: 7753437071599633941, guid: 28f7d483e80d56e49a461e7f67f929e3, type: 3}
   _terrainGenerator: {fileID: 1160175835}
   _mapSeedOffset: {x: 0, y: 0}

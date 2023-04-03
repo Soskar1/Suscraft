@@ -36,7 +36,7 @@ namespace Suscraft.Core.ProceduralWorldGeneration
                 Mathf.Abs(_currentChunkCenter.z - _player.transform.position.z) > _world.ChunkSize ||
                 Mathf.Abs(_currentPlayerChunkPosition.y - _player.transform.position.y) > _world.ChunkHeight)
             {
-                _world.LoadAdditionalChunksRequest(_player);
+                _world.LoadAdditionalChunksRequest(_player.transform);
             } else
             {
                 StartCoroutine(CheckChunkLoadingRequest());
