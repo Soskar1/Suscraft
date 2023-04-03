@@ -12,50 +12,77 @@ namespace Suscraft.Core.VoxelTerrainEngine
         [SerializeField] private int _mapSizeInChunks = 6;
         [SerializeField] private int _chunkSize = 16;
         [SerializeField] private int _chunkHeight = 100;
+        [SerializeField] private int _chunkDrawingRange = 8;
 
         [SerializeField] private GameObject _chunkPrefab;
 
         [SerializeField] private TerrainGenerator _terrainGenerator;
         [SerializeField] private Vector2Int _mapSeedOffset;
 
-        private Dictionary<Vector3Int, ChunkData> _chunkDatas = new Dictionary<Vector3Int, ChunkData>();
-        private Dictionary<Vector3Int, ChunkRenderer> _chunks = new Dictionary<Vector3Int, ChunkRenderer>();
-
         public Action OnWorldGenerated;
         public Action OnNewChunksGenerated;
 
+        public WorldData worldData { get; private set; }
+
         public int ChunkSize => _chunkSize;
         public int ChunkHeight => _chunkHeight;
+        public int ChunkDrawingRange => _chunkDrawingRange;
+
+        private void Awake()
+        {
+            worldData = new WorldData()
+            {
+                chunkHeight = _chunkHeight,
+                chunkSize = _chunkSize,
+                chunkDatas = new Dictionary<Vector3Int, ChunkData>(),
+                chunks = new Dictionary<Vector3Int, ChunkRenderer>()
+            };
+        }
 
         public void GenerateWorld()
         {
-            //_chunkDatas.Clear();
-            //foreach (ChunkRenderer chunk in _chunks.Values)
-            //    Destroy(chunk.gameObject);
+            WorldGenerationData worldGenerationData = GetVisiblePositions(Vector3Int.zero);
 
-            //_chunks.Clear();
-            WorldGenerationData worldGenerationData = GetPositionsThatPlayerSees(Vector3Int.zero);
-            for (int x = 0; x < _mapSizeInChunks; ++x)
+            foreach (var pos in worldGenerationData.chunkDataPositionsToCreate)
             {
-                for (int z = 0; z < _mapSizeInChunks; ++z)
-                {
-                    ChunkData data = new ChunkData(_chunkSize, _chunkHeight, this, new Vector3Int(x * _chunkSize, 0, z * _chunkSize));
-                    ChunkData newData = _terrainGenerator.GenerateChunkData(data, _mapSeedOffset);
-                    _chunkDatas.Add(newData.WorldPosition, newData);
-                }
+                ChunkData data = new ChunkData(_chunkSize, _chunkHeight, this, pos);
+                ChunkData newData = _terrainGenerator.GenerateChunkData(data, _mapSeedOffset);
+                worldData.chunkDatas.Add(pos, newData);
             }
 
-            foreach (ChunkData data in _chunkDatas.Values)
+            foreach (var pos in worldGenerationData.chunkPositionsToCreate)
             {
+                ChunkData data = worldData.chunkDatas[pos];
                 MeshData meshData = Chunk.GetChunkMeshData(data);
+
                 GameObject chunkObject = Instantiate(_chunkPrefab, data.WorldPosition, Quaternion.identity);
                 ChunkRenderer chunkRenderer = chunkObject.GetComponent<ChunkRenderer>();
-                _chunks.Add(data.WorldPosition, chunkRenderer);
+                worldData.chunks.Add(data.WorldPosition, chunkRenderer);
+
                 chunkRenderer.InitializeChunk(data);
                 chunkRenderer.UpdateChunk(meshData);
             }
 
             OnWorldGenerated?.Invoke();
+        }
+
+        private WorldGenerationData GetVisiblePositions(Vector3Int playerPosition)
+        {
+            List<Vector3Int> allChunkPositionsNeeded = WorldDataHelper.GetChunkPositionsAroundPlayer(this, playerPosition);
+            List<Vector3Int> allChunkDataPositionsNeeded = WorldDataHelper.GetDataPositionsAroundPlayer(this, playerPosition);
+
+            List<Vector3Int> chunkPositionsToCreate = WorldDataHelper.SelectPositionsToCreate(worldData, allChunkPositionsNeeded, playerPosition);
+            List<Vector3Int> chunkDataPositionsToCreate = WorldDataHelper.SelectDataPositionsToCreate(worldData, allChunkDataPositionsNeeded, playerPosition);
+
+            WorldGenerationData data = new WorldGenerationData
+            {
+                chunkPositionsToCreate = chunkPositionsToCreate,
+                chunkDataPositionsToCreate = chunkDataPositionsToCreate,
+                chunkPositionsToRemove = new List<Vector3Int>(),
+                chunkDataToRemove = new List<Vector3Int>()
+            };
+
+            return data;
         }
 
         private void GenerateVoxels(ChunkData data)
@@ -68,7 +95,7 @@ namespace Suscraft.Core.VoxelTerrainEngine
             Vector3Int position = Chunk.ChunkPositionFromVoxelCoordinates(this, x, y, z);
             ChunkData containerChunk = null;
 
-            _chunkDatas.TryGetValue(position, out containerChunk);
+            worldData.chunkDatas.TryGetValue(position, out containerChunk);
 
             if (containerChunk == null)
                 return VoxelType.Nothing;
@@ -90,5 +117,13 @@ namespace Suscraft.Core.VoxelTerrainEngine
         public List<Vector3Int> chunkDataPositionsToCreate;
         public List<Vector3Int> chunkPositionsToRemove;
         public List<Vector3Int> chunkDataToRemove;
+    }
+
+    public struct WorldData
+    {
+        public int chunkSize;
+        public int chunkHeight;
+        public Dictionary<Vector3Int, ChunkData> chunkDatas;
+        public Dictionary<Vector3Int, ChunkRenderer> chunks;
     }
 }
