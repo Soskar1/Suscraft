@@ -1,4 +1,4 @@
-using Suscraft.Core.Entities;
+using Suscraft.Core.Entities.PlayableCharacters;
 using Suscraft.Core.VoxelTerrainEngine;
 using System.Collections;
 using UnityEngine;
@@ -45,7 +45,7 @@ namespace Suscraft.Core.ProceduralWorldGeneration
 
         private void SetCurrentChunkCoordinates()
         {
-            _currentPlayerChunkPosition = WorldDataHelper.ChunkPositionFromVoxelCoords(_world, Vector3Int.RoundToInt(_player.transform.position));
+            _currentPlayerChunkPosition = WorldDataHelper.ChunkPositionFromVoxelCoordinates(_world, Vector3Int.RoundToInt(_player.transform.position));
             _currentChunkCenter.x = _currentPlayerChunkPosition.x + _world.ChunkSize / 2;
             _currentChunkCenter.z = _currentPlayerChunkPosition.z + _world.ChunkSize / 2;
         }

@@ -1,5 +1,5 @@
 using Cinemachine;
-using Suscraft.Core.Entities;
+using Suscraft.Core.Entities.PlayableCharacters;
 using Suscraft.Core.ProceduralWorldGeneration;
 using Suscraft.Core.VoxelTerrainEngine;
 using UnityEngine;
