@@ -1,4 +1,4 @@
-namespace Suscraft.Core.VoxelTerrainEngine
+namespace Suscraft.Core.VoxelTerrainEngine.Voxels
 {
     public enum VoxelType
     {

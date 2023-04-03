@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Suscraft.Core.VoxelTerrainEngine
+namespace Suscraft.Core.VoxelTerrainEngine.Voxels
 {
     public class VoxelDataManager : MonoBehaviour
     {

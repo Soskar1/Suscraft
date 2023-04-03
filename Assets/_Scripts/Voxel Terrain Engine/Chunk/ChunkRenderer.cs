@@ -2,7 +2,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace Suscraft.Core.VoxelTerrainEngine
+namespace Suscraft.Core.VoxelTerrainEngine.Chunks
 {
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]
     public class ChunkRenderer : MonoBehaviour

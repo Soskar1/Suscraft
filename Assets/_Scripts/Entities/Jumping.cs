@@ -2,7 +2,6 @@ using UnityEngine;
 
 namespace Suscraft.Core.Entities
 {
-    [RequireComponent(typeof(Rigidbody))]
     public class Jumping : MonoBehaviour
     {
         [SerializeField] private Rigidbody _rigidbody;

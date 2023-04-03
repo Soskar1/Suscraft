@@ -1,6 +1,7 @@
 using UnityEngine;
+using Suscraft.Core.VoxelTerrainEngine.Voxels;
 
-namespace Suscraft.Core.VoxelTerrainEngine
+namespace Suscraft.Core.VoxelTerrainEngine.Chunks
 {
     public class ChunkData
     {

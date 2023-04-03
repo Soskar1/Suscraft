@@ -1,6 +1,7 @@
 using UnityEngine;
+using Suscraft.Core.VoxelTerrainEngine.Chunks;
 
-namespace Suscraft.Core.VoxelTerrainEngine
+namespace Suscraft.Core.VoxelTerrainEngine.Voxels
 {
     public static class VoxelHelper
     {
