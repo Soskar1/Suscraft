@@ -140,7 +140,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4631605557638447002}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 38dcf19c1447b8445b5bd93085b06136, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.5
@@ -162,6 +162,7 @@ GameObject:
   - component: {fileID: 4631605558810483753}
   - component: {fileID: 4631605558810483764}
   - component: {fileID: 4631605558810483767}
+  - component: {fileID: 3682867459991748922}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -217,6 +218,7 @@ MonoBehaviour:
   _firstPersonCamera: {fileID: 4631605557272086961}
   _jumping: {fileID: 4631605558810483764}
   _groundCheck: {fileID: 4631605558810483767}
+  _digging: {fileID: 3682867459991748922}
   _eyes: {fileID: 4631605557272086974}
 --- !u!114 &4631605558810483755
 MonoBehaviour:
@@ -261,7 +263,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _rigidbody: {fileID: 4631605558810483766}
-  _force: 7.5
+  _force: 10
 --- !u!114 &4631605558810483767
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -276,6 +278,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _groundCheckPoint: {fileID: 4631605559161054089}
   _radius: 0.25
+  _groundLayer:
+    serializedVersion: 2
+    m_Bits: 8
+--- !u!114 &3682867459991748922
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4631605558810483757}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c21ddc268a5c3e4bb553a06f17c441b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _diggingLength: 5
   _groundLayer:
     serializedVersion: 2
     m_Bits: 8

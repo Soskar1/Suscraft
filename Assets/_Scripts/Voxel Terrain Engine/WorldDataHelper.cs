@@ -1,5 +1,5 @@
 using Suscraft.Core.VoxelTerrainEngine.Chunks;
-using System;
+using Suscraft.Core.VoxelTerrainEngine.Voxels;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -8,7 +8,7 @@ namespace Suscraft.Core.VoxelTerrainEngine
 {
     public static class WorldDataHelper
     {
-        public static Vector3Int ChunkPositionFromVoxelCoords(World world, Vector3Int position)
+        public static Vector3Int ChunkPositionFromVoxelCoordinates(World world, Vector3Int position)
         {
             return new Vector3Int
             {
@@ -31,33 +31,33 @@ namespace Suscraft.Core.VoxelTerrainEngine
             {
                 for (int z = startZ; z <= endZ; z += world.ChunkSize)
                 {
-                    Vector3Int chunkPos = ChunkPositionFromVoxelCoords(world, new Vector3Int(x, 0, z));
+                    Vector3Int chunkPos = ChunkPositionFromVoxelCoordinates(world, new Vector3Int(x, 0, z));
                     chunkPositionsToCreate.Add(chunkPos);
 
-                    //if (x >= playerPosition.x - world.ChunkSize && x <= playerPosition.x + world.ChunkSize &&
-                    //    z >= playerPosition.z - world.ChunkSize && z <= playerPosition.z + world.ChunkSize)
-                    //{
-                    //    for (int y = -world.ChunkHeight; y >= playerPosition.y - world.ChunkHeight * 2; y -= world.ChunkHeight)
-                    //    {
-                    //        chunkPos = ChunkPositionFromVoxelCoords(world, new Vector3Int(x, y, z));
-                    //        chunkPositionsToCreate.Add(chunkPos);
-                    //    }
-                    //}
+                    if (x >= playerPosition.x - world.ChunkSize && x <= playerPosition.x + world.ChunkSize &&
+                        z >= playerPosition.z - world.ChunkSize && z <= playerPosition.z + world.ChunkSize)
+                    {
+                        for (int y = -world.ChunkHeight; y >= playerPosition.y - world.ChunkHeight * 2; y -= world.ChunkHeight)
+                        {
+                            chunkPos = ChunkPositionFromVoxelCoordinates(world, new Vector3Int(x, y, z));
+                            chunkPositionsToCreate.Add(chunkPos);
+                        }
+                    }
                 }
             }
 
             return chunkPositionsToCreate;
         }
 
-        public static void RemoveChunkData(World world, Vector3Int pos) => world.worldData.chunkDatas.Remove(pos);
+        public static void RemoveChunkData(World world, Vector3Int pos) => world.WorldData.chunkDatas.Remove(pos);
 
         public static void RemoveChunk(World world, Vector3Int pos)
         {
             ChunkRenderer chunk = null;
-            if (world.worldData.chunks.TryGetValue(pos, out chunk))
+            if (world.WorldData.chunks.TryGetValue(pos, out chunk))
             {
                 world.RemoveChunk(chunk);
-                world.worldData.chunks.Remove(pos);
+                world.WorldData.chunks.Remove(pos);
             }
         }
 
@@ -74,22 +74,49 @@ namespace Suscraft.Core.VoxelTerrainEngine
             {
                 for (int z = startZ; z <= endZ; z += world.ChunkSize)
                 {
-                    Vector3Int chunkPos = ChunkPositionFromVoxelCoords(world, new Vector3Int(x, 0, z));
+                    Vector3Int chunkPos = ChunkPositionFromVoxelCoordinates(world, new Vector3Int(x, 0, z));
                     chunkDataPositionsToCreate.Add(chunkPos);
 
-                    //if (x >= playerPosition.x - world.ChunkSize && x <= playerPosition.x + world.ChunkSize &&
-                    //    z >= playerPosition.z - world.ChunkSize && z <= playerPosition.z + world.ChunkSize)
-                    //{
-                    //    for (int y = -world.ChunkHeight; y >= playerPosition.y - world.ChunkHeight * 2; y -= world.ChunkHeight)
-                    //    {
-                    //        chunkPos = ChunkPositionFromVoxelCoords(world, new Vector3Int(x, y, z));
-                    //        chunkDataPositionsToCreate.Add(chunkPos);
-                    //    }
-                    //}
+                    if (x >= playerPosition.x - world.ChunkSize && x <= playerPosition.x + world.ChunkSize &&
+                        z >= playerPosition.z - world.ChunkSize && z <= playerPosition.z + world.ChunkSize)
+                    {
+                        for (int y = -world.ChunkHeight; y >= playerPosition.y - world.ChunkHeight * 2; y -= world.ChunkHeight)
+                        {
+                            chunkPos = ChunkPositionFromVoxelCoordinates(world, new Vector3Int(x, y, z));
+                            chunkDataPositionsToCreate.Add(chunkPos);
+                        }
+                    }
                 }
             }
 
             return chunkDataPositionsToCreate;
+        }
+
+        public static ChunkRenderer GetChunk(World world, Vector3Int worldPosition)
+        {
+            if (world.WorldData.chunks.ContainsKey(worldPosition))
+                return world.WorldData.chunks[worldPosition];
+
+            return null;
+        }
+
+        public static void SetVoxel(World world, Vector3Int pos, VoxelType voxelType)
+        {
+            ChunkData chunkData = GetChunkData(world, pos);
+            if (chunkData != null)
+            {
+                Vector3Int localPosition = Chunk.GetVoxelInChunkCoordinates(chunkData, pos);
+                Chunk.SetVoxel(chunkData, localPosition, voxelType);
+            }
+        }
+
+        public static ChunkData GetChunkData(World world, Vector3Int pos)
+        {
+            Vector3Int chunkPosition = ChunkPositionFromVoxelCoordinates(world, pos);
+
+            ChunkData containerChunk = null;
+            world.WorldData.chunkDatas.TryGetValue(chunkPosition, out containerChunk);
+            return containerChunk;
         }
 
         public static List<Vector3Int> GetUnneededData(WorldData worldData, List<Vector3Int> allChunkDataPositionsNeeded)
@@ -101,21 +128,9 @@ namespace Suscraft.Core.VoxelTerrainEngine
 
         public static List<Vector3Int> GetUnneededChunks(WorldData worldData, List<Vector3Int> allChunkPositionsNeeded)
         {
-            //List<Vector3Int> positionsToRemove = new List<Vector3Int>();
-            //foreach (var pos in worldData.chunks.Keys
-            //    .Where(pos => allChunkPositionsNeeded.Contains(pos) == false))
-            //{
-            //    if (worldData.chunks.ContainsKey(pos))
-            //    {
-            //        positionsToRemove.Add(pos);
-            //    }
-            //}
-            
             return worldData.chunks.Keys
                 .Where(pos => allChunkPositionsNeeded.Contains(pos) == false && worldData.chunks.ContainsKey(pos))
                 .ToList();
-
-            //return positionsToRemove;
         }
 
         public static List<Vector3Int> SelectPositionsToCreate(WorldData worldData, List<Vector3Int> allChunkPositionsNeeded, Vector3Int playerPosition)

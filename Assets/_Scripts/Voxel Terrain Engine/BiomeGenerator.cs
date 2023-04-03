@@ -14,14 +14,12 @@ namespace Suscraft.Core.VoxelTerrainEngine
         [SerializeField] private NoiseSettings _biomeNoiseSettings;
         [SerializeField] private DomainWarping _domainWarping;
 
-        [SerializeField] private int _waterThreshold = 50;
-
         public ChunkData ProcessChunkColumn(ChunkData data, int x, int z, Vector2Int mapSeedOffset)
         {
             _biomeNoiseSettings.worldOffset = mapSeedOffset;
             int groundPosition = GetSurfaceHeightNoise(data.ChunkHeight, data.WorldPosition.x + x, data.WorldPosition.z + z);
 
-            for (int y = 0; y < data.ChunkHeight; ++y)
+            for (int y = data.WorldPosition.y; y < data.WorldPosition.y + data.ChunkHeight; ++y)
                 _startLayerHandler.Handle(data, new Vector3Int(x, y, z), groundPosition, mapSeedOffset);
 
             foreach (var layer in _additionalLayerHandlers)

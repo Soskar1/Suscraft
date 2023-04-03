@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using Suscraft.Core.VoxelTerrainEngine.Voxels;
+using System.Collections.Generic;
 
 namespace Suscraft.Core.VoxelTerrainEngine.Chunks
 {
@@ -50,7 +51,7 @@ namespace Suscraft.Core.VoxelTerrainEngine.Chunks
             } 
             else
             {
-                throw new Exception("Need to ask World for appropriate chunk");
+                WorldDataHelper.SetVoxel(chunkData.World, localPosition, voxel);
             }
         }
 
@@ -102,6 +103,43 @@ namespace Suscraft.Core.VoxelTerrainEngine.Chunks
                 y = Mathf.FloorToInt(y / (float)world.ChunkHeight) * world.ChunkHeight,
                 z = Mathf.FloorToInt(z / (float)world.ChunkSize) * world.ChunkSize
             };
+        }
+
+        public static bool IsOnEdge(ChunkData chunkData, Vector3Int worldPosition)
+        {
+            Vector3Int chunkPosition = GetVoxelInChunkCoordinates(chunkData, worldPosition);
+            if (chunkPosition.x == 0 || chunkPosition.x == chunkData.ChunkSize - 1 ||
+                chunkPosition.y == 0 || chunkPosition.y == chunkData.ChunkHeight - 1 ||
+                chunkPosition.z == 0 || chunkPosition.z == chunkData.ChunkSize - 1)
+                return true;
+
+            return false;
+        }
+
+        public static List<ChunkData> GetEdgeNeighbourChunk(ChunkData chunkData, Vector3Int worldPosition)
+        {
+            Vector3Int chunkPosition = GetVoxelInChunkCoordinates(chunkData, worldPosition);
+            List<ChunkData> neighboursToUpdate = new List<ChunkData>();
+
+            if (chunkPosition.x == 0)
+                neighboursToUpdate.Add(WorldDataHelper.GetChunkData(chunkData.World, worldPosition - Vector3Int.right));
+
+            if (chunkPosition.x == chunkData.ChunkSize - 1)
+                neighboursToUpdate.Add(WorldDataHelper.GetChunkData(chunkData.World, worldPosition + Vector3Int.right));
+
+            if (chunkPosition.y == 0)
+                neighboursToUpdate.Add(WorldDataHelper.GetChunkData(chunkData.World, worldPosition - Vector3Int.up));
+
+            if (chunkPosition.y == chunkData.ChunkHeight - 1)
+                neighboursToUpdate.Add(WorldDataHelper.GetChunkData(chunkData.World, worldPosition + Vector3Int.up));
+
+            if (chunkPosition.z == 0)
+                neighboursToUpdate.Add(WorldDataHelper.GetChunkData(chunkData.World, worldPosition - Vector3Int.forward));
+
+            if (chunkPosition.z == chunkData.ChunkSize - 1)
+                neighboursToUpdate.Add(WorldDataHelper.GetChunkData(chunkData.World, worldPosition + Vector3Int.forward));
+
+            return neighboursToUpdate;
         }
     }
 }

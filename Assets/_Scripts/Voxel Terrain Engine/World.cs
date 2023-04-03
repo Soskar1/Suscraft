@@ -21,7 +21,7 @@ namespace Suscraft.Core.VoxelTerrainEngine
         public Action OnWorldGenerated;
         public Action OnNewChunksGenerated;
 
-        public WorldData worldData { get; private set; }
+        public WorldData WorldData { get; private set; }
 
         public int ChunkSize => _chunkSize;
         public int ChunkHeight => _chunkHeight;
@@ -29,7 +29,7 @@ namespace Suscraft.Core.VoxelTerrainEngine
 
         private void Awake()
         {
-            worldData = new WorldData()
+            WorldData = new WorldData()
             {
                 chunkHeight = _chunkHeight,
                 chunkSize = _chunkSize,
@@ -54,23 +54,69 @@ namespace Suscraft.Core.VoxelTerrainEngine
             {
                 ChunkData data = new ChunkData(_chunkSize, _chunkHeight, this, pos);
                 ChunkData newData = _terrainGenerator.GenerateChunkData(data, _mapSeedOffset);
-                worldData.chunkDatas.Add(pos, newData);
+                WorldData.chunkDatas.Add(pos, newData);
             }
 
             foreach (var pos in worldGenerationData.chunkPositionsToCreate)
             {
-                ChunkData data = worldData.chunkDatas[pos];
+                ChunkData data = WorldData.chunkDatas[pos];
                 MeshData meshData = Chunk.GetChunkMeshData(data);
 
                 GameObject chunkObject = Instantiate(_chunkPrefab, data.WorldPosition, Quaternion.identity);
                 ChunkRenderer chunkRenderer = chunkObject.GetComponent<ChunkRenderer>();
-                worldData.chunks.Add(data.WorldPosition, chunkRenderer);
+                WorldData.chunks.Add(data.WorldPosition, chunkRenderer);
 
                 chunkRenderer.InitializeChunk(data);
                 chunkRenderer.UpdateChunk(meshData);
             }
 
             OnWorldGenerated?.Invoke();
+        }
+
+        public bool SetVoxel(RaycastHit hit, VoxelType voxelType)
+        {
+            ChunkRenderer chunkRenderer = hit.collider.GetComponent<ChunkRenderer>();
+            if (chunkRenderer == null)
+                return false;
+
+            Vector3Int pos = GetVoxelPosition(hit);
+
+            WorldDataHelper.SetVoxel(this, pos, voxelType);
+            chunkRenderer.ModifiedByPlayer = true;
+
+            if (Chunk.IsOnEdge(chunkRenderer.ChunkData, pos))
+            {
+                List<ChunkData> neighbourDataList = Chunk.GetEdgeNeighbourChunk(chunkRenderer.ChunkData, pos);
+                foreach (ChunkData neighbourData in neighbourDataList)
+                {
+                    ChunkRenderer chunkToUpdate = WorldDataHelper.GetChunk(neighbourData.World, neighbourData.WorldPosition);
+                    if (chunkToUpdate != null)
+                        chunkToUpdate.UpdateChunk();
+                }
+            }
+
+            chunkRenderer.UpdateChunk();
+
+            return true;
+        }
+
+        private Vector3Int GetVoxelPosition(RaycastHit hit)
+        {
+            Vector3 pos = new Vector3(
+                GetVoxelPositionIn(hit.point.x, hit.normal.x),
+                GetVoxelPositionIn(hit.point.y, hit.normal.y),
+                GetVoxelPositionIn(hit.point.z, hit.normal.z)
+                );
+
+            return Vector3Int.RoundToInt(pos);
+        }
+
+        private float GetVoxelPositionIn(float pos, float normal)
+        {
+            if (Mathf.Abs(pos % 1) == 0.5f)
+                pos -= (normal) / 2;
+
+            return (float)pos;
         }
 
         public void RemoveChunk(ChunkRenderer chunk) => chunk.gameObject.SetActive(false);
@@ -80,11 +126,11 @@ namespace Suscraft.Core.VoxelTerrainEngine
             List<Vector3Int> allChunkPositionsNeeded = WorldDataHelper.GetChunkPositionsAroundPlayer(this, playerPosition);
             List<Vector3Int> allChunkDataPositionsNeeded = WorldDataHelper.GetDataPositionsAroundPlayer(this, playerPosition);
 
-            List<Vector3Int> chunkPositionsToCreate = WorldDataHelper.SelectPositionsToCreate(worldData, allChunkPositionsNeeded, playerPosition);
-            List<Vector3Int> chunkDataPositionsToCreate = WorldDataHelper.SelectDataPositionsToCreate(worldData, allChunkDataPositionsNeeded, playerPosition);
+            List<Vector3Int> chunkPositionsToCreate = WorldDataHelper.SelectPositionsToCreate(WorldData, allChunkPositionsNeeded, playerPosition);
+            List<Vector3Int> chunkDataPositionsToCreate = WorldDataHelper.SelectDataPositionsToCreate(WorldData, allChunkDataPositionsNeeded, playerPosition);
 
-            List<Vector3Int> chunkPositionsToRemove = WorldDataHelper.GetUnneededChunks(worldData, allChunkPositionsNeeded);
-            List<Vector3Int> chunkDataToRemove = WorldDataHelper.GetUnneededData(worldData, allChunkDataPositionsNeeded);
+            List<Vector3Int> chunkPositionsToRemove = WorldDataHelper.GetUnneededChunks(WorldData, allChunkPositionsNeeded);
+            List<Vector3Int> chunkDataToRemove = WorldDataHelper.GetUnneededData(WorldData, allChunkDataPositionsNeeded);
 
             WorldGenerationData data = new WorldGenerationData
             {
@@ -102,7 +148,7 @@ namespace Suscraft.Core.VoxelTerrainEngine
             Vector3Int position = Chunk.ChunkPositionFromVoxelCoordinates(this, x, y, z);
             ChunkData containerChunk = null;
 
-            worldData.chunkDatas.TryGetValue(position, out containerChunk);
+            WorldData.chunkDatas.TryGetValue(position, out containerChunk);
 
             if (containerChunk == null)
                 return VoxelType.Nothing;
