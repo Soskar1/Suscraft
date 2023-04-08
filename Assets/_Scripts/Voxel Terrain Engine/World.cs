@@ -3,6 +3,7 @@ using UnityEngine;
 using Suscraft.Core.VoxelTerrainEngine.Chunks;
 using Suscraft.Core.VoxelTerrainEngine.Voxels;
 using System;
+using System.Collections;
 
 namespace Suscraft.Core.VoxelTerrainEngine
 {
@@ -20,6 +21,8 @@ namespace Suscraft.Core.VoxelTerrainEngine
 
         public Action OnWorldGenerated;
         public Action OnNewChunksGenerated;
+
+        private bool _isWorldCreated;
 
         public WorldData WorldData { get; private set; }
 
@@ -57,20 +60,39 @@ namespace Suscraft.Core.VoxelTerrainEngine
                 WorldData.chunkDatas.Add(pos, newData);
             }
 
-            foreach (var pos in worldGenerationData.chunkPositionsToCreate)
+            Dictionary<Vector3Int, MeshData> meshDataDictionary = new Dictionary<Vector3Int, MeshData>();
+            foreach (Vector3Int pos in worldGenerationData.chunkPositionsToCreate)
             {
                 ChunkData data = WorldData.chunkDatas[pos];
                 MeshData meshData = Chunk.GetChunkMeshData(data);
-
-                GameObject chunkObject = Instantiate(_chunkPrefab, data.WorldPosition, Quaternion.identity);
-                ChunkRenderer chunkRenderer = chunkObject.GetComponent<ChunkRenderer>();
-                WorldData.chunks.Add(data.WorldPosition, chunkRenderer);
-
-                chunkRenderer.InitializeChunk(data);
-                chunkRenderer.UpdateChunk(meshData);
+                meshDataDictionary.Add(pos, meshData);
             }
 
-            OnWorldGenerated?.Invoke();
+            StartCoroutine(CreateChunk(meshDataDictionary));
+        }
+
+        private IEnumerator CreateChunk(Dictionary<Vector3Int, MeshData> meshDataDictionary)
+        {
+            foreach (var item in meshDataDictionary)
+            {
+                CreateChunk(WorldData, item.Key, item.Value);
+                yield return new WaitForEndOfFrame();
+            }
+
+            if (!_isWorldCreated)
+            {
+                _isWorldCreated = true;
+                OnWorldGenerated?.Invoke();
+            }
+        }
+
+        private void CreateChunk(WorldData worldData, Vector3Int position, MeshData meshData)
+        {
+            GameObject chunkObject = Instantiate(_chunkPrefab, position, Quaternion.identity);
+            ChunkRenderer chunkRenderer = chunkObject.GetComponent<ChunkRenderer>();
+            WorldData.chunks.Add(position, chunkRenderer);
+            chunkRenderer.InitializeChunk(worldData.chunkDatas[position]);
+            chunkRenderer.UpdateChunk(meshData);
         }
 
         public bool SetVoxel(RaycastHit hit, VoxelType voxelType)
