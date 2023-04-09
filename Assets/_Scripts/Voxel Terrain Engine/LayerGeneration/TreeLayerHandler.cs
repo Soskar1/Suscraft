@@ -1,5 +1,6 @@
 using Suscraft.Core.VoxelTerrainEngine.Chunks;
 using Suscraft.Core.VoxelTerrainEngine.Voxels;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Suscraft.Core.VoxelTerrainEngine.Layers
@@ -9,14 +10,54 @@ namespace Suscraft.Core.VoxelTerrainEngine.Layers
         [SerializeField] private int _terrainHeightLimit = 25;
         [SerializeField] private int _treeHeight = 5;
 
+        private static List<Vector3Int> _treeLeafesStaticLayout = new List<Vector3Int>
+        {
+            new Vector3Int(-2, 0, -2),
+            new Vector3Int(-2, 0, -1),
+            new Vector3Int(-2, 0, 0),
+            new Vector3Int(-2, 0, 1),
+            new Vector3Int(-2, 0, 2),
+            new Vector3Int(-1, 0, -2),
+            new Vector3Int(-1, 0, -1),
+            new Vector3Int(-1, 0, 0),
+            new Vector3Int(-1, 0, 1),
+            new Vector3Int(-1, 0, 2),
+            new Vector3Int(0, 0, -2),
+            new Vector3Int(0, 0, -1),
+            new Vector3Int(0, 0, 0),
+            new Vector3Int(0, 0, 1),
+            new Vector3Int(0, 0, 2),
+            new Vector3Int(1, 0, -2),
+            new Vector3Int(1, 0, -1),
+            new Vector3Int(1, 0, 0),
+            new Vector3Int(1, 0, 1),
+            new Vector3Int(1, 0, 2),
+            new Vector3Int(2, 0, -2),
+            new Vector3Int(2, 0, -1),
+            new Vector3Int(2, 0, 0),
+            new Vector3Int(2, 0, 1),
+            new Vector3Int(2, 0, 2),
+            new Vector3Int(-1, 1, -1),
+            new Vector3Int(-1, 1, 0),
+            new Vector3Int(-1, 1, 1),
+            new Vector3Int(0, 1, -1),
+            new Vector3Int(0, 1, 0),
+            new Vector3Int(0, 1, 1),
+            new Vector3Int(1, 1, -1),
+            new Vector3Int(1, 1, 0),
+            new Vector3Int(1, 1, 1),
+            new Vector3Int(0, 2, 0)
+        };
+
         protected override bool TryHandling(ChunkData chunkData, Vector3Int position, int surfaceHeightNoise, Vector2Int mapSeedOffset)
         {
             if (chunkData.WorldPosition.y < 0)
                 return false;
 
-            if (surfaceHeightNoise < _terrainHeightLimit && chunkData.treeData.treePositions.Contains(new Vector2Int(position.x, position.z)))
+            if (surfaceHeightNoise < _terrainHeightLimit &&
+                chunkData.treeData.treePositions.Contains(new Vector2Int(chunkData.WorldPosition.x + position.x, chunkData.WorldPosition.z + position.z)))
             {
-                Vector3Int chunkCoordinates = Chunk.GetVoxelInChunkCoordinates(chunkData, new Vector3Int(position.x, surfaceHeightNoise, position.z));
+                Vector3Int chunkCoordinates = new Vector3Int(position.x, surfaceHeightNoise, position.z);
                 VoxelType type = Chunk.GetVoxelFromChunkCoordinates(chunkData, chunkCoordinates);
 
                 if (type == VoxelType.Grass_Dirt)
@@ -27,6 +68,9 @@ namespace Suscraft.Core.VoxelTerrainEngine.Layers
                         chunkCoordinates.y = surfaceHeightNoise + i;
                         Chunk.SetVoxel(chunkData, chunkCoordinates, VoxelType.TreeTrunk);
                     }
+
+                    foreach (Vector3Int leafPosition in _treeLeafesStaticLayout)
+                        chunkData.treeData.treeLeafesSolid.Add(new Vector3Int(position.x + leafPosition.x, surfaceHeightNoise + _treeHeight + leafPosition.y, position.z + leafPosition.z));
                 }
             }
 

@@ -8,13 +8,13 @@ namespace Suscraft.Core.VoxelTerrainEngine
 {
     public static class WorldDataHelper
     {
-        public static Vector3Int ChunkPositionFromVoxelCoordinates(World world, Vector3Int position)
+        public static Vector3Int ChunkPositionFromVoxelCoordinates(World world, Vector3Int worldPosition)
         {
             return new Vector3Int
             {
-                x = Mathf.FloorToInt(position.x / (float)world.ChunkSize) * world.ChunkSize,
-                y = Mathf.FloorToInt(position.y / (float)world.ChunkHeight) * world.ChunkHeight,
-                z = Mathf.FloorToInt(position.z / (float)world.ChunkSize) * world.ChunkSize
+                x = Mathf.FloorToInt(worldPosition.x / (float)world.ChunkSize) * world.ChunkSize,
+                y = Mathf.FloorToInt(worldPosition.y / (float)world.ChunkHeight) * world.ChunkHeight,
+                z = Mathf.FloorToInt(worldPosition.z / (float)world.ChunkSize) * world.ChunkSize
             };
         }
 
@@ -100,19 +100,19 @@ namespace Suscraft.Core.VoxelTerrainEngine
             return null;
         }
 
-        public static void SetVoxel(World world, Vector3Int pos, VoxelType voxelType)
+        public static void SetVoxel(World world, Vector3Int worldVoxelPosition, VoxelType voxelType)
         {
-            ChunkData chunkData = GetChunkData(world, pos);
+            ChunkData chunkData = GetChunkData(world, worldVoxelPosition);
             if (chunkData != null)
             {
-                Vector3Int localPosition = Chunk.GetVoxelInChunkCoordinates(chunkData, pos);
+                Vector3Int localPosition = Chunk.GetVoxelInChunkCoordinates(chunkData, worldVoxelPosition);
                 Chunk.SetVoxel(chunkData, localPosition, voxelType);
             }
         }
 
-        public static ChunkData GetChunkData(World world, Vector3Int pos)
+        public static ChunkData GetChunkData(World world, Vector3Int worldVoxelPosition)
         {
-            Vector3Int chunkPosition = ChunkPositionFromVoxelCoordinates(world, pos);
+            Vector3Int chunkPosition = ChunkPositionFromVoxelCoordinates(world, worldVoxelPosition);
 
             ChunkData containerChunk = null;
             world.WorldData.chunkDatas.TryGetValue(chunkPosition, out containerChunk);

@@ -51,7 +51,7 @@ namespace Suscraft.Core.VoxelTerrainEngine.Chunks
             } 
             else
             {
-                WorldDataHelper.SetVoxel(chunkData.World, localPosition, voxel);
+                WorldDataHelper.SetVoxel(chunkData.World, localPosition + chunkData.WorldPosition, voxel);
             }
         }
 

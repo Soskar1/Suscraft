@@ -147,13 +147,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 100970245}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1170252206}
-  m_RootOrder: 5
+  m_Father: {fileID: 1643764796}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &100970247
 MonoBehaviour:
@@ -1198,7 +1198,6 @@ Transform:
   - {fileID: 1552193485}
   - {fileID: 121068091}
   - {fileID: 1643764796}
-  - {fileID: 100970246}
   m_Father: {fileID: 1160175834}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1217,6 +1216,7 @@ MonoBehaviour:
   _startLayerHandler: {fileID: 1075466305}
   _additionalLayerHandlers:
   - {fileID: 1285140153}
+  - {fileID: 100970247}
   _biomeNoiseSettings: {fileID: 11400000, guid: 5207ad1e5dd9ef844be9c094f675f136, type: 2}
   _domainWarping: {fileID: 1170252208}
   _treeGenerator: {fileID: 1170252209}
@@ -1702,6 +1702,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1285140152}
+  - {fileID: 100970246}
   m_Father: {fileID: 1170252206}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
