@@ -1,5 +1,6 @@
 using UnityEngine;
 using Suscraft.Core.VoxelTerrainEngine.Voxels;
+using Suscraft.Core.VoxelTerrainEngine.Terrain;
 
 namespace Suscraft.Core.VoxelTerrainEngine.Chunks
 {
@@ -12,6 +13,7 @@ namespace Suscraft.Core.VoxelTerrainEngine.Chunks
         private Vector3Int _worldPosition;
 
         public bool modifiedByPlayer = false;
+        internal TreeData treeData;
 
         public VoxelType[] Voxels => _voxels;
         public int ChunkSize => _chunkSize;

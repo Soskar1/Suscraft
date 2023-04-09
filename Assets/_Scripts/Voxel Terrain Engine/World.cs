@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
+using Suscraft.Core.VoxelTerrainEngine.Terrain;
 
 namespace Suscraft.Core.VoxelTerrainEngine
 {
