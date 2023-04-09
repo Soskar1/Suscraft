@@ -18,8 +18,7 @@ namespace Suscraft.Core.VoxelTerrainEngine
         [SerializeField] private int _chunkHeight = 100;
         [SerializeField] private int _chunkDrawingRange = 8;
 
-        [SerializeField] private GameObject _chunkPrefab;
-
+        [SerializeField] private WorldRenderer _worldRenderer;
         [SerializeField] private TerrainGenerator _terrainGenerator;
         [SerializeField] private Vector2Int _mapSeedOffset;
 
@@ -35,6 +34,8 @@ namespace Suscraft.Core.VoxelTerrainEngine
         public int ChunkSize => _chunkSize;
         public int ChunkHeight => _chunkHeight;
         public int ChunkDrawingRange => _chunkDrawingRange;
+
+        public WorldRenderer WorldRenderer => _worldRenderer;
 
         private void Awake()
         {
@@ -152,11 +153,8 @@ namespace Suscraft.Core.VoxelTerrainEngine
 
         private void CreateChunk(WorldData worldData, Vector3Int position, MeshData meshData)
         {
-            GameObject chunkObject = Instantiate(_chunkPrefab, position, Quaternion.identity);
-            ChunkRenderer chunkRenderer = chunkObject.GetComponent<ChunkRenderer>();
+            ChunkRenderer chunkRenderer = _worldRenderer.RenderChunk(worldData, position, meshData);
             WorldData.chunks.Add(position, chunkRenderer);
-            chunkRenderer.InitializeChunk(worldData.chunkDatas[position]);
-            chunkRenderer.UpdateChunk(meshData);
         }
 
         public bool SetVoxel(RaycastHit hit, VoxelType voxelType)
@@ -205,8 +203,6 @@ namespace Suscraft.Core.VoxelTerrainEngine
             return (float)pos;
         }
 
-        public void RemoveChunk(ChunkRenderer chunk) => chunk.gameObject.SetActive(false);
-
         private WorldGenerationData GetVisiblePositions(Vector3Int playerPosition)
         {
             List<Vector3Int> allChunkPositionsNeeded = WorldDataHelper.GetChunkPositionsAroundPlayer(this, playerPosition);
@@ -248,14 +244,14 @@ namespace Suscraft.Core.VoxelTerrainEngine
             await GenerateWorld(Vector3Int.RoundToInt(player.position));
             OnNewChunksGenerated?.Invoke();
         }
-    }
 
-    public struct WorldGenerationData
-    {
-        public List<Vector3Int> chunkPositionsToCreate;
-        public List<Vector3Int> chunkDataPositionsToCreate;
-        public List<Vector3Int> chunkPositionsToRemove;
-        public List<Vector3Int> chunkDataToRemove;
+        public struct WorldGenerationData
+        {
+            public List<Vector3Int> chunkPositionsToCreate;
+            public List<Vector3Int> chunkDataPositionsToCreate;
+            public List<Vector3Int> chunkPositionsToRemove;
+            public List<Vector3Int> chunkDataToRemove;
+        }
     }
 
     public struct WorldData

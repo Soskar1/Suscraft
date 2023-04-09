@@ -542,6 +542,7 @@ GameObject:
   m_Component:
   - component: {fileID: 527283825}
   - component: {fileID: 527283826}
+  - component: {fileID: 527283827}
   m_Layer: 0
   m_Name: World
   m_TagString: Untagged
@@ -580,9 +581,22 @@ MonoBehaviour:
   _chunkSize: 16
   _chunkHeight: 100
   _chunkDrawingRange: 8
-  _chunkPrefab: {fileID: 7753437071599633941, guid: 28f7d483e80d56e49a461e7f67f929e3, type: 3}
+  _worldRenderer: {fileID: 527283827}
   _terrainGenerator: {fileID: 1160175835}
   _mapSeedOffset: {x: 0, y: 0}
+--- !u!114 &527283827
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 527283824}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a90829a7e05aba34e8e5f47b1d1905e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _chunkPrefab: {fileID: 7753437071599633941, guid: 28f7d483e80d56e49a461e7f67f929e3, type: 3}
 --- !u!1 &574475796
 GameObject:
   m_ObjectHideFlags: 0
