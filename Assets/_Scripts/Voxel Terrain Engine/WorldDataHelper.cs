@@ -56,7 +56,7 @@ namespace Suscraft.Core.VoxelTerrainEngine
             ChunkRenderer chunk = null;
             if (world.WorldData.chunks.TryGetValue(pos, out chunk))
             {
-                world.RemoveChunk(chunk);
+                world.WorldRenderer.RemoveChunk(chunk);
                 world.WorldData.chunks.Remove(pos);
             }
         }
