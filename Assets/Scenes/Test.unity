@@ -579,7 +579,7 @@ MonoBehaviour:
   _mapSizeInChunks: 10
   _chunkSize: 16
   _chunkHeight: 100
-  _chunkDrawingRange: 5
+  _chunkDrawingRange: 8
   _chunkPrefab: {fileID: 7753437071599633941, guid: 28f7d483e80d56e49a461e7f67f929e3, type: 3}
   _terrainGenerator: {fileID: 1160175835}
   _mapSeedOffset: {x: 0, y: 0}

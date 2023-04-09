@@ -4,6 +4,10 @@ using Suscraft.Core.VoxelTerrainEngine.Chunks;
 using Suscraft.Core.VoxelTerrainEngine.Voxels;
 using System;
 using System.Collections;
+using System.Threading.Tasks;
+using System.Collections.Concurrent;
+using System.Linq;
+using System.Threading;
 
 namespace Suscraft.Core.VoxelTerrainEngine
 {
@@ -24,6 +28,8 @@ namespace Suscraft.Core.VoxelTerrainEngine
 
         private bool _isWorldCreated;
 
+        private CancellationTokenSource _taskTokenSource = new CancellationTokenSource();
+
         public WorldData WorldData { get; private set; }
 
         public int ChunkSize => _chunkSize;
@@ -41,11 +47,13 @@ namespace Suscraft.Core.VoxelTerrainEngine
             };
         }
 
-        public void GenerateWorld() => GenerateWorld(Vector3Int.zero);
+        private void OnDisable() => _taskTokenSource.Cancel();
 
-        private void GenerateWorld(Vector3Int position)
+        public async void GenerateWorld() => await GenerateWorld(Vector3Int.zero);
+
+        private async Task GenerateWorld(Vector3Int position)
         {
-            WorldGenerationData worldGenerationData = GetVisiblePositions(position);
+            WorldGenerationData worldGenerationData = await Task.Run(() => GetVisiblePositions(position), _taskTokenSource.Token);
 
             foreach (var pos in worldGenerationData.chunkPositionsToRemove)
                 WorldDataHelper.RemoveChunk(this, pos);
@@ -53,25 +61,81 @@ namespace Suscraft.Core.VoxelTerrainEngine
             foreach (var pos in worldGenerationData.chunkDataToRemove)
                 WorldDataHelper.RemoveChunkData(this, pos);
 
-            foreach (var pos in worldGenerationData.chunkDataPositionsToCreate)
+            ConcurrentDictionary<Vector3Int, ChunkData> dataDictionary = null;
+
+            try
             {
-                ChunkData data = new ChunkData(_chunkSize, _chunkHeight, this, pos);
-                ChunkData newData = _terrainGenerator.GenerateChunkData(data, _mapSeedOffset);
-                WorldData.chunkDatas.Add(pos, newData);
+                dataDictionary = await CalculateWorldChunkData(worldGenerationData.chunkDataPositionsToCreate);
+            }
+            catch (Exception)
+            {
+                return;
             }
 
-            Dictionary<Vector3Int, MeshData> meshDataDictionary = new Dictionary<Vector3Int, MeshData>();
-            foreach (Vector3Int pos in worldGenerationData.chunkPositionsToCreate)
+            foreach (var calculatedData in dataDictionary)
+                WorldData.chunkDatas.Add(calculatedData.Key, calculatedData.Value);
+
+            ConcurrentDictionary<Vector3Int, MeshData> meshDataDictionary = new ConcurrentDictionary<Vector3Int, MeshData>();
+            List<ChunkData> dataToRender = WorldData.chunkDatas.
+                Where(keyValuePair => worldGenerationData.chunkPositionsToCreate.Contains(keyValuePair.Key)).
+                Select(keyValuePair => keyValuePair.Value).
+                ToList();
+
+            try
             {
-                ChunkData data = WorldData.chunkDatas[pos];
-                MeshData meshData = Chunk.GetChunkMeshData(data);
-                meshDataDictionary.Add(pos, meshData);
+                meshDataDictionary = await CreateMeshDataAsync(dataToRender);
+            }
+            catch (Exception)
+            {
+                return;
             }
 
             StartCoroutine(CreateChunk(meshDataDictionary));
         }
 
-        private IEnumerator CreateChunk(Dictionary<Vector3Int, MeshData> meshDataDictionary)
+        private Task<ConcurrentDictionary<Vector3Int, MeshData>> CreateMeshDataAsync(List<ChunkData> dataToRender)
+        {
+            ConcurrentDictionary<Vector3Int, MeshData> dictionary = new ConcurrentDictionary<Vector3Int, MeshData>();
+
+            return Task.Run(() =>
+            {
+                foreach (ChunkData data in dataToRender)
+                {
+                    if (_taskTokenSource.Token.IsCancellationRequested)
+                        _taskTokenSource.Token.ThrowIfCancellationRequested();
+
+                    MeshData meshData = Chunk.GetChunkMeshData(data);
+                    dictionary.TryAdd(data.WorldPosition, meshData);
+                }
+
+                return dictionary;
+            }, _taskTokenSource.Token
+            );
+        }
+
+        private Task<ConcurrentDictionary<Vector3Int, ChunkData>> CalculateWorldChunkData(List<Vector3Int> chunkDataPositionsToCreate)
+        {
+            ConcurrentDictionary<Vector3Int, ChunkData> dictionary = new ConcurrentDictionary<Vector3Int, ChunkData>();
+
+            return Task.Run(() =>
+            {
+                foreach (Vector3Int pos in chunkDataPositionsToCreate)
+                {
+                    if (_taskTokenSource.Token.IsCancellationRequested)
+                        _taskTokenSource.Token.ThrowIfCancellationRequested();
+
+                    ChunkData data = new ChunkData(_chunkSize, _chunkHeight, this, pos);
+                    ChunkData newData = _terrainGenerator.GenerateChunkData(data, _mapSeedOffset);
+                    dictionary.TryAdd(pos, newData);
+                }
+
+                return dictionary;
+            },
+            _taskTokenSource.Token
+            );
+        }
+
+        private IEnumerator CreateChunk(ConcurrentDictionary<Vector3Int, MeshData> meshDataDictionary)
         {
             foreach (var item in meshDataDictionary)
             {
@@ -179,10 +243,9 @@ namespace Suscraft.Core.VoxelTerrainEngine
             return Chunk.GetVoxelFromChunkCoordinates(containerChunk, voxelInChunkCoordinates);
         }
 
-        public void LoadAdditionalChunksRequest(Transform player)
+        public async void LoadAdditionalChunksRequest(Transform player)
         {
-            Debug.Log("Load more chunks");
-            GenerateWorld(Vector3Int.RoundToInt(player.position));
+            await GenerateWorld(Vector3Int.RoundToInt(player.position));
             OnNewChunksGenerated?.Invoke();
         }
     }
