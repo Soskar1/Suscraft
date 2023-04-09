@@ -12,7 +12,7 @@ namespace Suscraft.Core.VoxelTerrainEngine.Layers
         {
             if (position.y < surfaceHeightNoise)
             {
-                Chunk.SetVoxel(chunkData, position, _undergroundVoxelType);
+                Chunk.SetVoxel(chunkData, new Vector3Int(position.x, position.y - chunkData.WorldPosition.y, position.z), _undergroundVoxelType);
                 return true;
             }
 
