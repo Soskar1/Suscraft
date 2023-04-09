@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
+using Suscraft.Core.VoxelTerrainEngine.Terrain;
 
 namespace Suscraft.Core.VoxelTerrainEngine
 {
@@ -76,6 +77,9 @@ namespace Suscraft.Core.VoxelTerrainEngine
             foreach (var calculatedData in dataDictionary)
                 WorldData.chunkDatas.Add(calculatedData.Key, calculatedData.Value);
 
+            foreach (var chunkData in WorldData.chunkDatas.Values)
+                AddTreeLeafs(chunkData);
+
             ConcurrentDictionary<Vector3Int, MeshData> meshDataDictionary = new ConcurrentDictionary<Vector3Int, MeshData>();
             List<ChunkData> dataToRender = WorldData.chunkDatas.
                 Where(keyValuePair => worldGenerationData.chunkPositionsToCreate.Contains(keyValuePair.Key)).
@@ -92,6 +96,12 @@ namespace Suscraft.Core.VoxelTerrainEngine
             }
 
             StartCoroutine(CreateChunk(meshDataDictionary));
+        }
+
+        private void AddTreeLeafs(ChunkData chunkData)
+        {
+            foreach (var treeLeafes in chunkData.treeData.treeLeafesSolid)
+                Chunk.SetVoxel(chunkData, treeLeafes, VoxelType.TreeLeafesSolid);
         }
 
         private Task<ConcurrentDictionary<Vector3Int, MeshData>> CreateMeshDataAsync(List<ChunkData> dataToRender)

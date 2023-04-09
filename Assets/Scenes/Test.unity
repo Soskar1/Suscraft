@@ -123,6 +123,53 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &100970245
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 100970246}
+  - component: {fileID: 100970247}
+  m_Layer: 0
+  m_Name: TreeLayer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &100970246
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100970245}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1643764796}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &100970247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100970245}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc095c673e671114791e6ca5275f631d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _next: {fileID: 0}
+  _terrainHeightLimit: 25
+  _treeHeight: 5
 --- !u!1 &121068090
 GameObject:
   m_ObjectHideFlags: 0
@@ -1126,6 +1173,7 @@ GameObject:
   - component: {fileID: 1170252206}
   - component: {fileID: 1170252207}
   - component: {fileID: 1170252208}
+  - component: {fileID: 1170252209}
   m_Layer: 0
   m_Name: BiomeGenerator
   m_TagString: Untagged
@@ -1168,8 +1216,10 @@ MonoBehaviour:
   _startLayerHandler: {fileID: 1075466305}
   _additionalLayerHandlers:
   - {fileID: 1285140153}
+  - {fileID: 100970247}
   _biomeNoiseSettings: {fileID: 11400000, guid: 5207ad1e5dd9ef844be9c094f675f136, type: 2}
   _domainWarping: {fileID: 1170252208}
+  _treeGenerator: {fileID: 1170252209}
 --- !u!114 &1170252208
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1186,6 +1236,20 @@ MonoBehaviour:
   _noiseDomainY: {fileID: 11400000, guid: 7029d2265349048499d7e1dd60ef4541, type: 2}
   _amplitudeX: 80
   _amplitudeY: 80
+--- !u!114 &1170252209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1170252205}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 318fab0fac34eca4c8e826244bc40d59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _treeNoiseSettings: {fileID: 11400000, guid: b159b105da3647c419592e964c5155cc, type: 2}
+  _domainWarping: {fileID: 1170252208}
 --- !u!1 &1204975374
 GameObject:
   m_ObjectHideFlags: 0
@@ -1638,6 +1702,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1285140152}
+  - {fileID: 100970246}
   m_Father: {fileID: 1170252206}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
