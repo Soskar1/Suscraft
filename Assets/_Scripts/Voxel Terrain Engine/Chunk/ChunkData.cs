@@ -13,7 +13,7 @@ namespace Suscraft.Core.VoxelTerrainEngine.Chunks
         private Vector3Int _worldPosition;
 
         public bool modifiedByPlayer = false;
-        internal TreeData treeData;
+        public TreeData treeData;
 
         public VoxelType[] Voxels => _voxels;
         public int ChunkSize => _chunkSize;

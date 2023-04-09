@@ -3,7 +3,6 @@ using Suscraft.Core.VoxelTerrainEngine.Chunks;
 using Suscraft.Core.VoxelTerrainEngine.Noises;
 using Suscraft.Core.VoxelTerrainEngine.Layers;
 using System.Collections.Generic;
-using System;
 
 namespace Suscraft.Core.VoxelTerrainEngine.Terrain
 {
@@ -14,6 +13,8 @@ namespace Suscraft.Core.VoxelTerrainEngine.Terrain
 
         [SerializeField] private NoiseSettings _biomeNoiseSettings;
         [SerializeField] private DomainWarping _domainWarping;
+
+        [SerializeField] private TreeGenerator _treeGenerator;
 
         public ChunkData ProcessChunkColumn(ChunkData data, int x, int z, Vector2Int mapSeedOffset)
         {
@@ -29,9 +30,12 @@ namespace Suscraft.Core.VoxelTerrainEngine.Terrain
             return data;
         }
 
-        internal TreeData GetTreeData(ChunkData data, Vector2Int mapSeedOffset)
+        public TreeData GetTreeData(ChunkData data, Vector2Int mapSeedOffset)
         {
-            throw new NotImplementedException();
+            if (_treeGenerator == null)
+                return new TreeData();
+
+            return _treeGenerator.GenerateTreeData(data, mapSeedOffset);
         }
 
         private int GetSurfaceHeightNoise(int chunkHeight, int x, int z)
